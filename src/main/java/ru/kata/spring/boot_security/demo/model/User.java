@@ -1,41 +1,60 @@
 package ru.kata.spring.boot_security.demo.model;
-
-import org.springframework.data.annotation.Id;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
+
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-    public User() {
-
-    }
-
-    @javax.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String username;
+    private String password;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
     @Column(name = "name")
     private String name;
 
     @Column(name = "last_name")
     private String lastName;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", firstName='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", age='" + age + '\'' +
+                ", age=" + age +
                 '}';
     }
+
+    public User() {
+
+    }
+
     @Column(name = "age")
     private int age;
 
@@ -59,8 +78,11 @@ public class User implements UserDetails {
         return age;
     }
 
-    public User(Long id, String name, String lastName, int age) {
+    public User(Long id, String username, String password , Set<Role> roles, String name, String lastName, int age) {
         this.id = id;
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
         this.name = name;
         this.lastName = lastName;
         this.age = age;
@@ -77,8 +99,6 @@ public class User implements UserDetails {
     public Long getId() {
         return id;
     }
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles;
 
     public Set<Role> getRoles() {
         return roles;
@@ -94,7 +114,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return getPassword();
+        return password;
     }
 
     @Override

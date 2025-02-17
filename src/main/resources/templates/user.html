@@ -1,11 +1,25 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Spring Security Example</title>
+    <title>User Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<h1>User, welcome spring boot security page!</h1>
-
-
+<div class="container mt-5">
+    <h1>User Information</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${user.name} + ' ' + ${user.lastName}"></h5>
+            <p class="card-text"><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+            <p class="card-text"><strong>Name:</strong> <span th:text="${user.name}"></span></p>
+            <p class="card-text"><strong>Last Name:</strong> <span th:text="${user.lastName}"></span></p>
+            <p class="card-text"><strong>Age:</strong> <span th:text="${user.age}"></span></p>
+            <p class="card-text"><strong>Roles:</strong> <span th:text="${user.roles}"></span></p>
+        </div>
+    </div>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-link">Logout</button>
+    </form>
+</div>
 </body>
 </html>
