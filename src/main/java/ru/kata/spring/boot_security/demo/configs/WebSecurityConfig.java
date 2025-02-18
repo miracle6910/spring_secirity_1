@@ -1,7 +1,10 @@
 package ru.kata.spring.boot_security.demo.configs;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -12,43 +15,45 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private final SuccessUserHandler successUserHandler;
+    private final UserServiceImpl userDetailsService;
 
-    private UserDetailsService userDetailsService;
-
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+    @Autowired
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserServiceImpl UserServiceImpl) {
+        this.successUserHandler = successUserHandler;
+        this.userDetailsService = UserServiceImpl;
     }
+
+    @Autowired
+    public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public static NoOpPasswordEncoder passwordEncoder() {
+        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests(auth -> auth
-                        .antMatchers("/", "/login", "/logout").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin(login -> login
-                        .successHandler(customAuthenticationSuccessHandler())
-                        .permitAll()
-                );
-        http.logout()
-
+                .authorizeRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user").hasAnyRole("USER","ADMIN")
+                .antMatchers("/login").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin().successHandler(successUserHandler)
                 .permitAll()
-
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-
-                .logoutSuccessUrl("/login?logout")
-
-                .and().csrf().disable();
-
-        return null;
+                .and()
+                .logout()
+                .permitAll();
     }
-    @Bean
-    public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new SuccessUserHandler();
-    }
+
 }

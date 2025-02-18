@@ -12,6 +12,7 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -49,10 +50,10 @@ public class AdminController {
     @PostMapping("/new")
     public String saveUser(@ModelAttribute("user") User user,
                            @RequestParam("selectedRoles") List<Long> selectedRoleIds) {
-        Set<Role> roles = new HashSet<>();
-        for (Long roleId : selectedRoleIds) {
-            roles.add(roleService.getRoleById(roleId));
-        }
+        Set<Role> roles = new HashSet<>(roleService.getAllRoles());
+        roles = roles.stream()
+                .filter(role -> selectedRoleIds.contains(role.getId()))
+                .collect(Collectors.toSet());
         user.setRoles(roles);
         userService.saveUser(user);
         return "redirect:/admin";
@@ -69,10 +70,10 @@ public class AdminController {
     public String updateUser(@PathVariable("id") Long id, @ModelAttribute("user") User user,
                              @RequestParam("selectedRoles") List<Long> selectedRoleIds) {
         user.setId(id);
-        Set<Role> roles = new HashSet<>();
-        for (Long roleId : selectedRoleIds) {
-            roles.add(roleService.getRoleById(roleId));
-        }
+        Set<Role> roles = new HashSet<>(roleService.getAllRoles());
+        roles = roles.stream()
+                .filter(role -> selectedRoleIds.contains(role.getId()))
+                .collect(Collectors.toSet());
         user.setRoles(roles);
         userService.updateUser(user);
         return "redirect:/admin";
