@@ -25,6 +25,7 @@ public class UserController {
         model.addAttribute("user", currentUser);
         return "user";
     }
+
     @GetMapping("/logout")
     public String logout() {
         return "logout";
