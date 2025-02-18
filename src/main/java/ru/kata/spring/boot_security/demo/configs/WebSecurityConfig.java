@@ -16,18 +16,13 @@ import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final SuccessUserHandler successUserHandler;
-    private final UserServiceImpl userDetailsService;
+        private final SuccessUserHandler successUserHandler;
+        private final UserServiceImpl userService;
 
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserServiceImpl UserServiceImpl) {
-        this.successUserHandler = successUserHandler;
-        this.userDetailsService = UserServiceImpl;
-    }
-
-    public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
-
+        public WebSecurityConfig(SuccessUserHandler successUserHandler, UserServiceImpl userService) {
+            this.successUserHandler = successUserHandler;
+            this.userService = userService;
+        }
     @Bean
     public static NoOpPasswordEncoder passwordEncoder() {
         return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
