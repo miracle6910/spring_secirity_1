@@ -19,13 +19,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final SuccessUserHandler successUserHandler;
     private final UserServiceImpl userDetailsService;
 
-    @Autowired
     public WebSecurityConfig(SuccessUserHandler successUserHandler, UserServiceImpl UserServiceImpl) {
         this.successUserHandler = successUserHandler;
         this.userDetailsService = UserServiceImpl;
     }
 
-    @Autowired
     public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
