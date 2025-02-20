@@ -47,16 +47,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.save(user);
     }
 
-    @Transactional
     @Override
-    public void updateUser(User user) {
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
-        userRepository.save(user);
-    }
-    @Override
-    public void updateUserWithRoles(Long id, User user, List<Long> roleId) {
+    public void updateUser(Long id, User user, List<Long> roleId) {
         user.setId(id);
         Set<Role> roles = roleService.getAllRoles().stream()
                 .filter(role -> roleId.contains(role.getId()))
