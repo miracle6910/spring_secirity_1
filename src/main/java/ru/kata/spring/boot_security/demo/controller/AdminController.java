@@ -61,13 +61,7 @@ public class AdminController {
     @PostMapping("/edit/{id}")
     public String updateUser(@PathVariable("id") Long id, @ModelAttribute("user") User user,
                              @RequestParam("selectedRoles") List<Long> selectedRoleIds) {
-        user.setId(id);
-        Set<Role> roles = new HashSet<>(roleService.getAllRoles());
-        roles = roles.stream()
-                .filter(role -> selectedRoleIds.contains(role.getId()))
-                .collect(Collectors.toSet());
-        user.setRoles(roles);
-        userService.updateUser(user);
+        userService.updateUserWithRoles(id, user, selectedRoleIds);
         return "redirect:/admin";
     }
 
