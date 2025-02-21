@@ -17,7 +17,6 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public String getUserPage(@AuthenticationPrincipal User currentUser, Model model) {
         model.addAttribute("user", currentUser);

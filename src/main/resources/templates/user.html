@@ -14,7 +14,11 @@
             <p class="card-text"><strong>Name:</strong> <span th:text="${user.name}"></span></p>
             <p class="card-text"><strong>Last Name:</strong> <span th:text="${user.lastName}"></span></p>
             <p class="card-text"><strong>Age:</strong> <span th:text="${user.age}"></span></p>
-            <p class="card-text"><strong>Roles:</strong> <span th:text="${user.roles}"></span></p>
+            <p class="card-text"><strong>Roles:</strong>
+                <th:block th:each="role : ${user.roles}">
+                    <span class="badge badge-info" th:text="${role.name}"></span>
+                </th:block>
+            </p>
         </div>
     </div>
     <form th:action="@{/logout}" method="post">
